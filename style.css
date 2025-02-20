@@ -1,75 +1,118 @@
 body {
-    margin: 0;
-    background: #222;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-  
-  #game-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  canvas {
-    background: #333;
-    display: block;
-    margin: 20px 0;
-    border: 2px solid #fff;
-  }
-  
-  #ui {
-    text-align: center;
-  }
-  
-  #stats {
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background: #555;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  button:hover {
-    background: #777;
-  }
-  
-  /* Overlay styling for both start and game over popups */
-  .overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.85);
-    padding: 30px;
-    border: 2px solid #fff;
-    border-radius: 10px;
-    text-align: center;
-    width: 80%;
-    max-width: 400px;
-    z-index: 10;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  #difficultyOptions {
-    margin: 15px 0;
-  }
-  
-  #difficultyOptions label {
-    margin: 0 10px;
-    font-size: 16px;
-  }
-  
+  margin: 0;
+  background: #222;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#game-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Canvas styling */
+canvas {
+  background: #333;
+  display: block;
+  margin: 20px 0;
+  border: 2px solid #fff;
+}
+
+/* UI styling */
+#ui {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#stats {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #555;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+button:hover {
+  background: #777;
+}
+
+/* Overlay styling for popups */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  padding: 30px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+  z-index: 10;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Pack a Punch button styling (top right inside game container) */
+#packPunchBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 20;
+}
+
+/* Developer Mode button styling (positioned under Pack a Punch) */
+#devModeBtn {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  z-index: 20;
+}
+
+/* Developer container styling */
+#devContainer {
+  /* Same basic styling as .overlay; additional styles can be added if needed */
+}
+
+/* Close button styling for developer container */
+.closeBtn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Developer password input styling */
+#devPasswordInput {
+  padding: 5px;
+  font-size: 16px;
+}
+
+/* Difficulty options styling */
+#difficultyOptions {
+  margin: 15px 0;
+}
+
+#difficultyOptions label {
+  margin: 0 10px;
+  font-size: 16px;
+}
