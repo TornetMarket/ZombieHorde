@@ -3,6 +3,7 @@ body {
     background: #222;
     color: #fff;
     font-family: Arial, sans-serif;
+    text-align: center;
   }
   
   #game-container {
@@ -61,5 +62,14 @@ body {
   
   .hidden {
     display: none;
+  }
+  
+  #difficultyOptions {
+    margin: 15px 0;
+  }
+  
+  #difficultyOptions label {
+    margin: 0 10px;
+    font-size: 16px;
   }
   
