@@ -169,7 +169,7 @@ function update() {
   ctx.font = "14px Arial";
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
-  ctx.fillText("Richtofen", player.x, player.y + player.radius + 15);
+  ctx.fillText("Kennedy", player.x, player.y + player.radius + 15);
 
   // Update and draw bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
