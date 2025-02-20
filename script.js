@@ -13,17 +13,17 @@ const player = {
   radius: 15,
 };
 
-// Game state variables
-let ammo = 10;
-let money = 0;
-let isGameOver = false;
-let spawnInterval = null;
-let lastTouchTime = 0;
+// Global game state variables
+let ammo, money, health, isGameOver = false, spawnInterval = null, lastTouchTime = 0;
+let startingAmmo = 10;          // Default for Easy
+let currentZombieSpeed = 1.5;   // Default for Easy
+let zombieSpawnCount = 1;       // Number of zombies to spawn each cycle
 
 // Audio soundtrack
 const soundtrack = new Audio('115.mp3');
 soundtrack.loop = true;
 
+// UI Elements
 const ammoDisplay = document.getElementById('ammoCount');
 const moneyDisplay = document.getElementById('moneyCount');
 const buyAmmoBtn = document.getElementById('buyAmmoBtn');
@@ -52,15 +52,15 @@ function Bullet(x, y, angle) {
   this.vy = Math.sin(angle) * this.speed;
 }
 
-// Zombie constructor
+// Zombie constructor (speed set based on currentZombieSpeed)
 function Zombie(x, y) {
   this.x = x;
   this.y = y;
   this.radius = 20;
-  this.speed = 1.5;
+  this.speed = currentZombieSpeed;
 }
 
-// Spawn a zombie from a random edge of the canvas
+// Function to spawn a zombie from a random edge of the canvas
 function spawnZombie() {
   let edge = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
   let x, y;
@@ -128,18 +128,48 @@ function isColliding(obj1, obj2) {
   return distance < obj1.radius + obj2.radius;
 }
 
+// Draw the health bar above the survivor
+function drawHealthBar() {
+  const barWidth = 40;
+  const barHeight = 5;
+  const x = player.x - barWidth / 2;
+  const y = player.y - player.radius - 15;
+  
+  // Background (empty health)
+  ctx.fillStyle = "#555";
+  ctx.fillRect(x, y, barWidth, barHeight);
+  
+  // Current health (green)
+  const healthPercent = Math.max(0, health) / 100;
+  ctx.fillStyle = "#0f0";
+  ctx.fillRect(x, y, barWidth * healthPercent, barHeight);
+  
+  // Border
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(x, y, barWidth, barHeight);
+}
+
 // Main game loop
 function update() {
   if (isGameOver) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw the player
+  // Draw the player (blue circle)
   ctx.beginPath();
   ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-  ctx.fillStyle = '#00f'; // blue
+  ctx.fillStyle = '#00f';
   ctx.fill();
   ctx.closePath();
+
+  // Draw the health bar over the survivor
+  drawHealthBar();
+
+  // Draw nametag below the survivor
+  ctx.font = "14px Arial";
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.fillText("Richtofen", player.x, player.y + player.radius + 15);
 
   // Update and draw bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -153,10 +183,9 @@ function update() {
       continue;
     }
 
-    // Draw bullet
     ctx.beginPath();
     ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#ff0'; // yellow
+    ctx.fillStyle = '#ff0';
     ctx.fill();
     ctx.closePath();
 
@@ -180,20 +209,24 @@ function update() {
     z.x += Math.cos(angle) * z.speed;
     z.y += Math.sin(angle) * z.speed;
 
-    // Draw zombie in red
     ctx.beginPath();
     ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
     ctx.fillStyle = '#f00';
     ctx.fill();
     ctx.closePath();
 
-    // Check collision with player (game over)
+    // Check collision with player
     if (isColliding(z, player)) {
-      isGameOver = true;
-      clearInterval(spawnInterval);
-      finalScoreDisplay.textContent = "Game Over! You scored: $" + money;
-      gameOverScreen.classList.remove("hidden");
-      return;
+      // Remove the colliding zombie and subtract health
+      zombies.splice(i, 1);
+      health -= 33;
+      if (health <= 0) {
+        isGameOver = true;
+        clearInterval(spawnInterval);
+        finalScoreDisplay.textContent = "Game Over! You scored: $" + money;
+        gameOverScreen.classList.remove("hidden");
+        return;
+      }
     }
   }
 
@@ -204,19 +237,39 @@ function update() {
 function resetGame() {
   bullets = [];
   zombies = [];
-  ammo = 10;
+  ammo = startingAmmo;
   money = 0;
+  health = 100; // Reset health to 100%
   isGameOver = false;
   updateUI();
 }
 
 // Start game (called from start popup)
 function startGame() {
+  // Determine selected difficulty
+  const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+  if (difficulty === "easy") {
+    startingAmmo = 10;
+    currentZombieSpeed = 1.5;
+    zombieSpawnCount = 1;
+  } else if (difficulty === "hard") {
+    startingAmmo = 8;
+    currentZombieSpeed = 2.0;
+    zombieSpawnCount = 1;
+  } else if (difficulty === "veteran") {
+    startingAmmo = 5;
+    currentZombieSpeed = 3.0;
+    zombieSpawnCount = 2; // Spawn double zombies
+  }
   resetGame();
   startScreen.classList.add("hidden");
   soundtrack.play();
   spawnInterval = setInterval(() => {
-    if (!isGameOver) spawnZombie();
+    if (!isGameOver) {
+      for (let i = 0; i < zombieSpawnCount; i++) {
+        spawnZombie();
+      }
+    }
   }, 1000);
   update();
 }
@@ -227,7 +280,11 @@ function restartGame() {
   gameOverScreen.classList.add("hidden");
   soundtrack.play();
   spawnInterval = setInterval(() => {
-    if (!isGameOver) spawnZombie();
+    if (!isGameOver) {
+      for (let i = 0; i < zombieSpawnCount; i++) {
+        spawnZombie();
+      }
+    }
   }, 1000);
   update();
 }
