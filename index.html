@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zombie Horde Survival</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+      <div id="stats">
+        <span>Ammo: <span id="ammoCount">10</span></span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span>Money: $<span id="moneyCount">0</span></span>
+      </div>
+      <button id="buyAmmoBtn">Buy Ammo ($20 for 5 bullets)</button>
+    </div>
+    <!-- Start Screen Popup -->
+    <div id="startScreen" class="overlay">
+      <p>A zombie outbreak just occurred. You are the last survivor. Survive the horde...</p>
+      <button id="startBtn">Zombie Hunt</button>
+    </div>
+    <!-- Game Over Popup -->
+    <div id="gameOverScreen" class="overlay hidden">
+      <p id="finalScore"></p>
+      <button id="restartBtn">Restart Game</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
