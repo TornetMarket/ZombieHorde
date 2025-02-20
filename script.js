@@ -22,12 +22,17 @@ let zombieSpawnCount = 1;       // Zombies spawned each cycle
 let baseZombieSpawnCount = 1;   // Initial spawn count (from difficulty)
 let currentRound = 1;           // Round counter
 let juggernogPurchased = false;
+let weaponUpgraded = false;     // New flag: weapon upgraded to rainbow mode
 let devGodmode = false;         // Developer Godmode flag
 
 // Auto-fire variables
 let autoFireEnabled = false;
 let autoFireInterval = null;
 let autoFireX = 0, autoFireY = 0;
+
+// Rainbow colors for upgraded bullets
+const rainbowColors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#8B00FF"];
+let bulletColorIndex = 0;
 
 // Audio objects
 const soundtrack = new Audio('115.mp3');
@@ -70,7 +75,7 @@ function updateUI() {
   moneyDisplay.textContent = money;
 }
 
-// Bullet constructor
+// Bullet constructor – assign color based on weapon upgrade
 function Bullet(x, y, angle) {
   this.x = x;
   this.y = y;
@@ -78,6 +83,13 @@ function Bullet(x, y, angle) {
   this.speed = 7;
   this.vx = Math.cos(angle) * this.speed;
   this.vy = Math.sin(angle) * this.speed;
+  // If weapon is upgraded, assign a rainbow color; otherwise use yellow
+  if (weaponUpgraded) {
+    this.color = rainbowColors[bulletColorIndex % rainbowColors.length];
+    bulletColorIndex++;
+  } else {
+    this.color = '#ff0';
+  }
 }
 
 // Zombie constructor
@@ -109,7 +121,7 @@ function shootBullet(x, y) {
   }
 }
 
-// Click event for shooting (if auto-fire not enabled)
+// Click event for shooting (if auto-fire is not enabled)
 canvas.addEventListener('click', (event) => {
   if (autoFireEnabled) return;
   if (Date.now() - lastTouchTime < 500) return;
@@ -119,7 +131,7 @@ canvas.addEventListener('click', (event) => {
   shootBullet(mouseX, mouseY);
 });
 
-// Touchstart for shooting / auto-fire
+// Touchstart event for shooting / auto-fire
 canvas.addEventListener('touchstart', (event) => {
   event.preventDefault();
   const rect = canvas.getBoundingClientRect();
@@ -129,6 +141,7 @@ canvas.addEventListener('touchstart', (event) => {
   if (autoFireEnabled) {
     autoFireX = touchX;
     autoFireY = touchY;
+    // Fire immediately once
     shootBullet(autoFireX, autoFireY);
     autoFireInterval = setInterval(() => {
       shootBullet(autoFireX, autoFireY);
@@ -162,6 +175,7 @@ canvas.addEventListener('mousedown', (event) => {
   const rect = canvas.getBoundingClientRect();
   autoFireX = event.clientX - rect.left;
   autoFireY = event.clientY - rect.top;
+  // Fire immediately on mousedown
   shootBullet(autoFireX, autoFireY);
   autoFireInterval = setInterval(() => {
     shootBullet(autoFireX, autoFireY);
@@ -233,9 +247,10 @@ packPunchBtn.addEventListener('click', () => {
   }
 });
 
-// "Upgrade Gun" in Pack a Punch overlay
+// "Upgrade Gun" event in Pack a Punch overlay
 upgradeGunBtn.addEventListener('click', () => {
   autoFireEnabled = true;
+  weaponUpgraded = true;  // Set weapon upgrade flag so bullets are rainbow-colored
   ammo += 300;
   updateUI();
   packPunchContainer.classList.add('hidden');
@@ -278,7 +293,7 @@ devSubmitBtn.addEventListener('click', () => {
   }
 });
 
-// Developer mode options
+// Developer options
 godmodeBtn.addEventListener('click', () => {
   devGodmode = true;
 });
@@ -294,10 +309,8 @@ giveMoneyBtn.addEventListener('click', () => {
 // Developer container close button
 devCloseBtn.addEventListener('click', () => {
   devContainer.classList.add('hidden');
-  // Clear password input
   devPasswordInput.value = "";
   devError.style.display = 'none';
-  // Resume game
   gamePaused = false;
   spawnInterval = setInterval(() => {
     if (!isGameOver) {
@@ -382,9 +395,15 @@ function update() {
     }
     ctx.beginPath();
     ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#ff0';
+    // Use bullet color and add glow effect if weapon is upgraded
+    ctx.fillStyle = b.color;
+    if (weaponUpgraded) {
+      ctx.shadowColor = b.color;
+      ctx.shadowBlur = 10;
+    }
     ctx.fill();
     ctx.closePath();
+    ctx.shadowBlur = 0;
     for (let j = zombies.length - 1; j >= 0; j--) {
       const z = zombies[j];
       if (isColliding(b, z)) {
@@ -434,6 +453,7 @@ function resetGame() {
   maxHealth = 100;
   currentRound = 1;
   juggernogPurchased = false;
+  weaponUpgraded = false;
   devGodmode = false;
   autoFireEnabled = false;
   buyPerkBtn.disabled = false;
@@ -443,7 +463,7 @@ function resetGame() {
   if (roundInterval) clearInterval(roundInterval);
 }
 
-// Start game from start screen
+// Start game (from start screen)
 function startGame() {
   const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
   if (difficulty === "easy") { startingAmmo = 10; currentZombieSpeed = 1.5; zombieSpawnCount = 1; }
@@ -476,7 +496,7 @@ function restartGame() {
   update();
 }
 
-// Change difficulty: hide game over and show start screen
+// Change difficulty: hide game over, show start screen
 function changeDifficulty() {
   clearInterval(spawnInterval);
   clearInterval(roundInterval);
@@ -485,7 +505,7 @@ function changeDifficulty() {
   resetGame();
 }
 
-// Event listeners for start, restart, and change difficulty
+// Event listeners
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', restartGame);
 changeDifficultyBtn.addEventListener('click', changeDifficulty);
