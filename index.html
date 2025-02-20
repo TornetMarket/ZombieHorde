@@ -8,6 +8,9 @@
 </head>
 <body>
   <div id="game-container">
+    <!-- Pack a Punch and Developer Mode buttons (positioned top right inside container) -->
+    <button id="packPunchBtn">Pack a Punch ($1000)</button>
+    <button id="devModeBtn">Developer Mode</button>
     <canvas id="gameCanvas"></canvas>
     <div id="ui">
       <div id="stats">
@@ -35,10 +38,31 @@
       </div>
       <button id="startBtn">Zombie Hunt</button>
     </div>
+    <!-- Pack a Punch Popup -->
+    <div id="packPunchContainer" class="overlay hidden">
+      <h2>Pack a Punch</h2>
+      <button id="upgradeGunBtn">Upgrade Gun</button>
+    </div>
+    <!-- Developer Mode Popup -->
+    <div id="devContainer" class="overlay hidden">
+      <button id="devCloseBtn" class="closeBtn">X</button>
+      <div id="devPasswordSection">
+        <p>Enter Password:</p>
+        <input type="password" id="devPasswordInput" />
+        <button id="devSubmitBtn">Submit</button>
+        <p id="devError" style="color: red; display: none;">Incorrect password!</p>
+      </div>
+      <div id="devOptions" class="hidden">
+        <button id="godmodeBtn">Godmode</button>
+        <button id="maxAmmoBtn">Max Ammo</button>
+        <button id="giveMoneyBtn">Give $1000</button>
+      </div>
+    </div>
     <!-- Game Over Popup -->
     <div id="gameOverScreen" class="overlay hidden">
       <p id="finalScore"></p>
       <button id="restartBtn">Restart Game</button>
+      <button id="changeDifficultyBtn">Change Difficulty</button>
     </div>
   </div>
   <script src="script.js"></script>
